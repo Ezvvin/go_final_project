@@ -1,9 +1,11 @@
 package main
 
 import (
-	"example/server"
+	db "example/internal/database"
+	"example/internal/server"
 )
 
 func main() {
+	db.OpenDatabase()
 	server.StartServer()
 }

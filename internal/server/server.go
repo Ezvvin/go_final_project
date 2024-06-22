@@ -17,6 +17,7 @@ func getPort() string {
 	return ":" + os.Getenv("TODO_PORT")
 }
 
+// запуск сервера
 func StartServer() {
 	const webDir = "./web"
 	handler := chi.NewRouter()

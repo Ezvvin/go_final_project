@@ -9,3 +9,6 @@ type Task struct {
 	Comment string `json:"comment"`   // комментарий к задаче;
 	Repeat  string `json:"repeat"`    // строковое поле не более 128 символов
 }
+type Tasks struct {
+	Tasks []Task `json:"tasks"`
+}
