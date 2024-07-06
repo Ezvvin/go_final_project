@@ -1,16 +1,17 @@
-package services
+package nextdate
 
 import (
 	"errors"
-	"example/internal/models"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
-// NextDate вычисляет следующую дату для задачи в соответствии с правилом повторения
+// NextDate возвращает дату и ошибку, исходя из правил указанных в repeat.
 func NextDate(now time.Time, date string, repeat string) (string, error) {
+	dateFormat := os.Getenv("TODO_DATEFORMAT")
 	if len(repeat) == 0 {
 		return "", errors.New("правило повторения не указано")
 	}
@@ -28,7 +29,7 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 			return "", errors.New("максимальное количество дней должно быть 400")
 		}
 
-		parsedDate, err := time.Parse(models.DatePattern, date)
+		parsedDate, err := time.Parse(dateFormat, date)
 		if err != nil {
 			return "", err
 		}
@@ -39,9 +40,9 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 			newDate = newDate.AddDate(0, 0, days)
 		}
 
-		return newDate.Format(models.DatePattern), nil
+		return newDate.Format(dateFormat), nil
 	} else if yearMatched {
-		parsedDate, err := time.Parse(models.DatePattern, date)
+		parsedDate, err := time.Parse(dateFormat, date)
 		if err != nil {
 			return "", err
 		}
@@ -52,7 +53,7 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 			newDate = newDate.AddDate(1, 0, 0)
 		}
 
-		return newDate.Format(models.DatePattern), nil
+		return newDate.Format(dateFormat), nil
 	}
 	return "", errors.New("неверный формат повторения")
 }
