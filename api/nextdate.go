@@ -4,22 +4,20 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
+	"example/config"
 	db "example/internal/db"
 	nd "example/internal/nextdate"
 )
 
 var (
-	dbs        db.DB
-	dateFormat string
+	dbs db.Storage
 )
 
 // InitApi инициплизирует переменные используемые в пакете api, зависящие от переменных среды и других пакетов
-func InitApi(storage db.DB) {
+func InitApi(storage db.Storage) {
 	dbs = storage
-	dateFormat = os.Getenv("TODO_DATEFORMAT")
 }
 
 // writeErr пишет ошибку в response в формате JSON и статус запроса BadRequest
@@ -60,7 +58,7 @@ func GetNextDateHandler(w http.ResponseWriter, r *http.Request) {
 	now := q.Get("now")
 	date := q.Get("date")
 	repeat := q.Get("repeat")
-	nowDate, err := time.Parse(dateFormat, now)
+	nowDate, err := time.Parse(config.DateFormat, now)
 	if err != nil {
 		log.Println(err)
 		return

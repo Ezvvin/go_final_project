@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/json"
+	"example/config"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -15,13 +15,11 @@ import (
 // PostSigninHandler обрабатывает запросы к api/signin.
 // При корректном вводе пароля, возвращает JSON {"token":JWT}. В случае ошибки возвращает JSON {"error":error}
 func PostSigninHandler(w http.ResponseWriter, r *http.Request) {
-	targetPassword := os.Getenv("TODO_PASSWORD")
 	var buf bytes.Buffer
 	var err error
 	var body map[string]string
 	var password string
 	var signedToken string
-
 	write := func() {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		var resp []byte
@@ -63,17 +61,14 @@ func PostSigninHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		password = body["password"]
 	}
-	if password != targetPassword {
+	if password != config.TargetPassword {
 		err = fmt.Errorf("неправильный пароль")
-		fmt.Println(os.Getenv("TODO_PASSWORD"))
-		fmt.Println(password)
-		fmt.Println(targetPassword)
 		write()
 		return
 	}
 
 	claims := jwt.MapClaims{
-		"password": sha256.Sum256([]byte(targetPassword)),
+		"password": sha256.Sum256([]byte(config.TargetPassword)),
 		"Exp":      1550946689,
 	}
 
@@ -81,7 +76,7 @@ func PostSigninHandler(w http.ResponseWriter, r *http.Request) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// получаем подписанный токен
-	signedToken, err = jwtToken.SignedString([]byte(targetPassword))
+	signedToken, err = jwtToken.SignedString([]byte(config.TargetPassword))
 	if err != nil {
 		write()
 		return

@@ -8,7 +8,7 @@ import (
 )
 
 // GetTaskByID возвращает задачу Task с указанным ID, или ошибку.
-func (dbHandl *DB) GetTaskByID(id string) (Task, error) {
+func (dbHandl *Storage) GetTaskByID(id string) (Task, error) {
 	var task Task
 
 	row := dbHandl.db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id))

@@ -2,19 +2,16 @@ package db
 
 import (
 	"database/sql"
+	"example/config"
 	"os"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type DB struct {
+type Storage struct {
 	db *sql.DB
 }
-
-var (
-	DateFormat string
-)
 
 // CheckDbFile проверяет существует ли файл переданный аргументом
 func CheckDbFile(dbFile string) bool {
@@ -28,25 +25,22 @@ func CheckDbFile(dbFile string) bool {
 }
 
 // OpenDatabase открывает базу данных указанную в .env файле, добавляет её в структуру DBHandler.
-func OpenDatabase() (DB, error) {
-	dbFile := os.Getenv("TODO_DBFILE")
-	DateFormat = os.Getenv("TODO_DATEFORMAT")
-
-	db, err := sql.Open("sqlite3", dbFile)
+func OpenDatabase() (Storage, error) {
+	db, err := sql.Open("sqlite3", config.DbFile)
 	if err != nil {
-		return DB{}, err
+		return Storage{}, err
 	}
 	db.SetMaxIdleConns(2)
 	db.SetMaxOpenConns(6)
 	db.SetConnMaxIdleTime(time.Minute * 5)
-	dbHandl := DB{}
+	dbHandl := Storage{}
 	dbHandl.db = db
 
 	return dbHandl, nil
 }
 
 // CloseDB закрывает подключение к базе данных.
-func (dbHandl *DB) CloseDB() error {
+func (dbHandl *Storage) CloseDB() error {
 	db := dbHandl.db
 	err := db.Close()
 	if err != nil {
@@ -60,21 +54,19 @@ func (dbHandl *DB) CloseDB() error {
 // отправляет SQL запрос на создание таблицы из файла qu.sql.
 // Возвращает ошибку в случае неудачи.
 func InstallDB() error {
-	dbFile := os.Getenv("TODO_DBFILE")
-	db, err := sql.Open("sqlite3", dbFile)
+	db, err := sql.Open("sqlite3", config.DbFile)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 	createTable := `CREATE TABLE "scheduler" (
-	"id"	INTEGER,
+	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
 	"date"	TEXT NOT NULL,
 	"title"	TEXT NOT NULL,
 	"comment"	TEXT,
 	"repeat"	TEXT NOT NULL DEFAULT "",
 	CHECK(length("repeat") <= 128)
 	CHECK(length("title") > 0)
-	PRIMARY KEY("id" AUTOINCREMENT)
 );`
 
 	_, err = db.Exec(createTable)

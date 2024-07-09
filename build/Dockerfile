@@ -4,10 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod download
+RUN go mod tidy
 
-EXPOSE 7540
+RUN GOOS=${TODO_GOOS} GOARCH=${TODO_GOARCH} go build -o /main ./cmd
 
-RUN GOOS=${TODO_GOOS} GOARCH=${TODO_GOARCH} go build -o /my_app ./cmd
-
-CMD ["/my_app"]
+CMD ["/main"]

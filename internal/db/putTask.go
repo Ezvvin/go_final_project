@@ -8,7 +8,7 @@ import (
 )
 
 // PutTask отправляет SQL запрос на обновление задачи Task, возвращает ошибку в случае неудачи.
-func (dbHandl *DB) PutTask(updateTask Task) error {
+func (dbHandl *Storage) PutTask(updateTask Task) error {
 	res, err := dbHandl.db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
 		sql.Named("date", updateTask.Date),
 		sql.Named("title", updateTask.Title),

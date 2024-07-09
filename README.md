@@ -19,18 +19,8 @@ go mod tidy
 cd .\cmd\
 
 ### Настройка
-## Параметры окружения
-Создайте .env файл в корне
-
-TODO_PORT = "7540"
-TODO_DBFILE = "../scheduler.db"
-TODO_PASSWORD = "drowssap7"
-TODO_DATEFORMAT = "20060102"
-
-"Путь может отличаться в зависимости от вашей ОС"
 
 ### Запуск сервера
-
 
 go run main.go
 

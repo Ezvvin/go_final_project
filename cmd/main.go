@@ -4,28 +4,23 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"example/api"
+	"example/config"
 	"example/internal/auth"
 	db "example/internal/db"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	// Загружаем переменные среды
-	err := godotenv.Load("../.env")
-	if err != nil {
-		fmt.Println(err)
-	}
-	dbFile := os.Getenv("TODO_DBFILE")
 
+	// Загружаем переменные среды
+	config.EnvLoad()
 	// Если бд не существует, создаём
-	if !db.CheckDbFile(dbFile) {
-		err = db.InstallDB()
+	if !db.CheckDbFile(config.DbFile) {
+		err := db.InstallDB()
 		if err != nil {
 			log.Println(err)
 		}
@@ -41,13 +36,12 @@ func main() {
 
 	// Адрес для запуска сервера
 	ip := ""
-	port := os.Getenv("TODO_PORT")
-	addr := fmt.Sprintf("%s:%s", ip, port)
+	addr := fmt.Sprintf("%s:%s", ip, config.Port)
 
 	// Router
 	r := chi.NewRouter()
 
-	r.Handle("/*", http.FileServer(http.Dir("../web")))
+	r.Handle("/*", http.FileServer(http.Dir("./web")))
 
 	r.Get("/api/nextdate", api.GetNextDateHandler)
 	r.Get("/api/tasks", auth.Auth(api.GetTasksHandler))
@@ -55,7 +49,7 @@ func main() {
 	r.Post("/api/signin", auth.Auth(api.PostSigninHandler))
 	r.Handle("/api/task", auth.Auth(api.TaskHandler))
 
-	log.Printf("Server running on %s\n", port)
+	log.Printf("Server running on %s\n", config.Port)
 	// Запуск сервера
 	err = http.ListenAndServe(addr, r)
 	if err != nil {

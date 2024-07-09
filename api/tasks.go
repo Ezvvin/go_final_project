@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"example/config"
 	db "example/internal/db"
 	"fmt"
 	"log"
@@ -64,7 +65,7 @@ func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	case isDate:
 		date, err = time.Parse("02.01.2006", search)
 		if err == nil {
-			search = date.Format(dateFormat)
+			search = date.Format(config.DateFormat)
 			tasks, err = dbs.GetTasksList(search)
 			break
 		}

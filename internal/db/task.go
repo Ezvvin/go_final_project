@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"example/config"
 	nd "example/internal/nextdate"
 )
 
@@ -25,10 +26,10 @@ func (task Task) FormatTask() (Task, error) {
 
 	if len(task.Date) == 0 || strings.ToLower(task.Date) == "today" {
 		date = time.Now()
-		task.Date = date.Format(DateFormat)
+		task.Date = date.Format(config.DateFormat)
 
 	} else {
-		date, err = time.Parse(DateFormat, task.Date)
+		date, err = time.Parse(config.DateFormat, task.Date)
 		if err != nil {
 			log.Println(err)
 			return Task{}, err
@@ -52,7 +53,7 @@ func (task Task) FormatTask() (Task, error) {
 				return Task{}, err
 			}
 		case len(task.Repeat) == 0:
-			task.Date = time.Now().Format(DateFormat)
+			task.Date = time.Now().Format(config.DateFormat)
 		}
 
 	}
