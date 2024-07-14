@@ -7,7 +7,6 @@ import (
 
 	"example/api"
 	"example/config"
-	"example/internal/auth"
 	db "example/internal/db"
 
 	"github.com/go-chi/chi/v5"
@@ -35,8 +34,7 @@ func main() {
 	api.InitApi(dbHandl)
 
 	// Адрес для запуска сервера
-	ip := ""
-	addr := fmt.Sprintf("%s:%s", ip, config.Port)
+	addr := fmt.Sprintf(":%s", config.Port)
 
 	// Router
 	r := chi.NewRouter()
@@ -44,12 +42,14 @@ func main() {
 	r.Handle("/*", http.FileServer(http.Dir("./web")))
 
 	r.Get("/api/nextdate", api.GetNextDateHandler)
-	r.Get("/api/tasks", auth.Auth(api.GetTasksHandler))
-	r.Post("/api/task/done", auth.Auth(api.PostTaskDoneHandler))
-	r.Post("/api/signin", auth.Auth(api.PostSigninHandler))
-	r.Handle("/api/task", auth.Auth(api.TaskHandler))
+	r.MethodFunc(http.MethodGet, "/api/task", api.GetTask)
+	r.MethodFunc(http.MethodPut, "/api/task", api.UpdateTask)
+	r.MethodFunc(http.MethodDelete, "/api/task", api.DeleteTask)
+	r.MethodFunc(http.MethodPost, "/api/task", api.AddTask)
+	r.MethodFunc(http.MethodGet, "/api/tasks", api.GetTasks)
+	r.MethodFunc(http.MethodPost, "/api/task/done", api.TaskDone)
 
-	log.Printf("Server running on %s\n", config.Port)
+	log.Printf("Сервер на порту: %s\n", config.Port)
 	// Запуск сервера
 	err = http.ListenAndServe(addr, r)
 	if err != nil {

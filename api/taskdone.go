@@ -1,53 +1,52 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
-	"regexp"
-	"time"
-
+	"encoding/json"
 	nd "example/internal/nextdate"
+	"net/http"
+	"time"
 )
 
-// PostTaskDoneHandler обрабатывает запросы к /api/task/done с методом POST.
-// Если пользователь авторизован, удаляет задачи не имеющих правил повторения repeat, или обновляет дату выполнения задач, имеющих правило repeat.
-// Возвращает пустой JSON {} в случае успеха, или JSON {"error": error} при возникновение ошибки.
-func PostTaskDoneHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
+func TaskDone(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	q := r.URL.Query()
-	id := q.Get("id")
-	isID, _ := regexp.Match("[0-9]+", []byte(id))
-	if !isID {
-		writeErr(fmt.Errorf("некорректный формат id"), w)
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "Не указан идентификатор задачи", http.StatusBadRequest)
 		return
 	}
+
 	task, err := dbs.GetTaskByID(id)
 	if err != nil {
-		writeErr(err, w)
+		http.Error(w, "Error:"+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if len(task.Repeat) == 0 {
-		err = dbs.DeleteTask(id)
-		if err != nil {
-			writeErr(err, w)
-			return
-		}
-		writeEmptyJson(w)
-		return
-	} else {
-		nextDate, err := nd.NextDate(time.Now(), task.Date, task.Repeat)
-		if err != nil {
-			writeErr(err, w)
-			return
-		}
-		task.Date = nextDate
-	}
-	err = dbs.PutTask(task)
-	if err != nil {
-		writeErr(err, w)
-		return
-	}
-	writeEmptyJson(w)
 
+	if task.Repeat == "" {
+		// Удаляем одноразовую задачу
+		err := dbs.DeleteTask(id)
+		if err != nil {
+			http.Error(w, "Error:"+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		// Рассчитываем следующую дату для периодической задачи
+		now := time.Now()
+		nextDate, err := nd.NextDate(now, task.Date, task.Repeat)
+		if err != nil {
+
+			http.Error(w, "Ошибка вычисления следующей даты", http.StatusInternalServerError)
+			return
+		}
+
+		// Обновляем задачу с новой датой
+		task.Date = nextDate
+		err = dbs.PutTask(task)
+		if err != nil {
+			http.Error(w, "Error:"+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{})
 }

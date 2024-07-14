@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -18,37 +17,6 @@ var (
 // InitApi инициплизирует переменные используемые в пакете api, зависящие от переменных среды и других пакетов
 func InitApi(storage db.Storage) {
 	dbs = storage
-}
-
-// writeErr пишет ошибку в response в формате JSON и статус запроса BadRequest
-func writeErr(err error, w http.ResponseWriter) {
-	log.Println(err)
-	errResp := map[string]string{
-		"error": err.Error(),
-	}
-	resp, err := json.Marshal(errResp)
-	if err != nil {
-		log.Println(err)
-	}
-	w.WriteHeader(http.StatusBadRequest)
-	_, err = w.Write(resp)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-// writeEmptyJson пишет в response пустой JSON {} и статус запроса OK
-func writeEmptyJson(w http.ResponseWriter) {
-	okResp := map[string]string{}
-	resp, err := json.Marshal(okResp)
-	if err != nil {
-		log.Println(err)
-	}
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(resp)
-	if err != nil {
-		log.Println(err)
-	}
 }
 
 // GetNextDateHandler обрабатывает GET запросы к api/nextdate
