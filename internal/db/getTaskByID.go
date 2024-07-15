@@ -14,9 +14,9 @@ func (dbHandl *Storage) GetTaskByID(id string) (Task, error) {
 	row := dbHandl.db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = :id", sql.Named("id", id))
 
 	err := row.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
-	if err = row.Err(); err != nil {
-		log.Println(err)
-		return Task{}, err
+	if err != nil {
+		log.Println("Ошибка выполнения запроса:", err)
+		return task, err
 	}
 	return task, nil
 
