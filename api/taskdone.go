@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	nd "example/internal/nextdate"
 	"net/http"
 	"time"
+
+	nd "example/internal/nextdate"
 )
 
 func TaskDone(w http.ResponseWriter, r *http.Request) {

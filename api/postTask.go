@@ -2,8 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	db "example/internal/db"
 	"net/http"
+
+	db "example/internal/db"
 )
 
 func AddTask(w http.ResponseWriter, r *http.Request) {

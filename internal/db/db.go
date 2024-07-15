@@ -2,9 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"example/config"
 	"os"
 	"time"
+
+	"example/config"
 
 	_ "github.com/mattn/go-sqlite3"
 )

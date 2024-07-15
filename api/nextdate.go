@@ -6,18 +6,8 @@ import (
 	"time"
 
 	"example/config"
-	db "example/internal/db"
 	nd "example/internal/nextdate"
 )
-
-var (
-	dbs db.Storage
-)
-
-// InitApi инициплизирует переменные используемые в пакете api, зависящие от переменных среды и других пакетов
-func InitApi(storage db.Storage) {
-	dbs = storage
-}
 
 // GetNextDateHandler обрабатывает GET запросы к api/nextdate
 func GetNextDateHandler(w http.ResponseWriter, r *http.Request) {

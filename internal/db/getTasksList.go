@@ -2,9 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"example/config"
 	"log"
 	"time"
+
+	"example/config"
 )
 
 // GetTasksList возвращает последние добавленные задачи []Task, либо последние добавленные задачи подходящие под поисковой запрос search при его наличие.
@@ -53,6 +54,10 @@ func (dbHandl *Storage) GetTasksList(search ...string) ([]Task, error) {
 			log.Println(err)
 			return nil, err
 		}
+	}
+	if err = rows.Err(); err != nil {
+		log.Println(err)
+		return nil, err
 	}
 	return tasks, nil
 }
