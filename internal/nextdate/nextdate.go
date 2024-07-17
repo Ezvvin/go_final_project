@@ -2,11 +2,12 @@ package nextdate
 
 import (
 	"errors"
-	"example/config"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"example/config"
 )
 
 // NextDate возвращает дату и ошибку, исходя из правил указанных в repeat.

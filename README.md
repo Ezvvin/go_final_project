@@ -15,9 +15,6 @@
 git clone https://github.com/Ezvvin/go_final_project.git  
 cd go_final_project  
 go mod tidy  
-cd .\cmd\  
-
-### Настройка
 
 ### Запуск сервера
 
