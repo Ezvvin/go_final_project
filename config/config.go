@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	RowsLimit = 15
+	RowsLimit = 30
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 )
 
 func EnvLoad() error {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load("./.env")
 	if err != nil {
 		fmt.Println(err)
 		return err

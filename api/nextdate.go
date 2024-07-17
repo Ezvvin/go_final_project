@@ -9,8 +9,8 @@ import (
 	nd "example/internal/nextdate"
 )
 
-// GetNextDateHandler обрабатывает GET запросы к api/nextdate
-func GetNextDateHandler(w http.ResponseWriter, r *http.Request) {
+// GetNextDate обрабатывает GET запросы к api/nextdate
+func GetNextDate(w http.ResponseWriter, r *http.Request) {
 
 	q := r.URL.Query()
 	now := q.Get("now")
@@ -24,6 +24,7 @@ func GetNextDateHandler(w http.ResponseWriter, r *http.Request) {
 
 	nextDate, err := nd.NextDate(nowDate, date, repeat)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

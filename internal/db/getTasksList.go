@@ -16,7 +16,8 @@ func (dbHandl *Storage) GetTasksList(search ...string) ([]Task, error) {
 
 	switch {
 	case len(search) == 0:
-		rows, err = dbHandl.db.Query("SELECT * FROM scheduler ORDER BY id LIMIT :limit", sql.Named("limit", config.RowsLimit))
+		rows, err = dbHandl.db.Query("SELECT * FROM scheduler ORDER BY id LIMIT :limit",
+			sql.Named("limit", config.RowsLimit))
 		if err != nil {
 			return []Task{}, err
 		}
@@ -47,16 +48,14 @@ func (dbHandl *Storage) GetTasksList(search ...string) ([]Task, error) {
 
 		err := rows.Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 		if err != nil {
-			return nil, err
+			log.Println(err)
+			return []Task{}, err
 		}
 		tasks = append(tasks, task)
-		if err = rows.Err(); err != nil {
-			log.Println(err)
-			return nil, err
-		}
+
 	}
 	if err = rows.Err(); err != nil {
-		log.Println(err)
+		log.Fatal("Ошибка чтения строк:", err)
 		return nil, err
 	}
 	return tasks, nil

@@ -41,7 +41,7 @@ func main() {
 
 	r.Handle("/*", http.FileServer(http.Dir("./web")))
 
-	r.Get("/api/nextdate", api.GetNextDateHandler)
+	r.Get("/api/nextdate", api.GetNextDate)
 	r.MethodFunc(http.MethodGet, "/api/task", api.GetTask)
 	r.MethodFunc(http.MethodPut, "/api/task", api.UpdateTask)
 	r.MethodFunc(http.MethodDelete, "/api/task", api.DeleteTask)
